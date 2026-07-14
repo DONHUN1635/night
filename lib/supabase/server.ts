@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import type { Database } from '@/types/database';
 
@@ -38,7 +39,6 @@ export function createServerSupabaseClient() {
 // Csak szerveroldali API route-okban használható, kiterjesztett jogokkal
 // (pl. vendég session létrehozása). SOHA ne importáld kliens komponensbe.
 export function createServiceRoleClient() {
-  const { createClient } = require('@supabase/supabase-js');
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
