@@ -78,7 +78,12 @@ export default function PrivateConversationPage({ params }: { params: { id: stri
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'private_messages', filter: `conversation_id=eq.${conversationId}` },
-        (payload) => setMessages((prev) => [...prev, payload.new as PrivateMessage])
+        (payload) =>
+          setMessages((prev) =>
+            prev.some((m) => m.id === (payload.new as PrivateMessage).id)
+              ? prev
+              : [...prev, payload.new as PrivateMessage]
+          )
       )
       .subscribe();
 
@@ -111,11 +116,19 @@ export default function PrivateConversationPage({ params }: { params: { id: stri
     if (!userId) return;
     if (isPotentialCrisisMessage(content)) setShowCrisisPanel(true);
 
-    await supabase.from('private_messages').insert({
-      conversation_id: conversationId,
-      sender_id: userId,
-      content,
-    });
+    const { data, error } = await supabase
+      .from('private_messages')
+      .insert({
+        conversation_id: conversationId,
+        sender_id: userId,
+        content,
+      })
+      .select()
+      .single();
+
+    if (!error && data) {
+      setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data as PrivateMessage]));
+    }
   }
 
   function handleTyping() {

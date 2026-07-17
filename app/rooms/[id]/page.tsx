@@ -78,7 +78,9 @@ export default function RoomChatPage({ params }: { params: { id: string } }) {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message]);
+          setMessages((prev) =>
+            prev.some((m) => m.id === (payload.new as Message).id) ? prev : [...prev, payload.new as Message]
+          );
         }
       )
       .on(
@@ -137,13 +139,21 @@ export default function RoomChatPage({ params }: { params: { id: string } }) {
       setShowCrisisPanel(true);
     }
 
-    await supabase.from('messages').insert({
-      room_id: roomId,
-      author_profile_id: currentUserId,
-      author_guest_id: currentUserId ? null : currentGuestId,
-      author_display_name: displayName,
-      content,
-    });
+    const { data, error } = await supabase
+      .from('messages')
+      .insert({
+        room_id: roomId,
+        author_profile_id: currentUserId,
+        author_guest_id: currentUserId ? null : currentGuestId,
+        author_display_name: displayName,
+        content,
+      })
+      .select()
+      .single();
+
+    if (!error && data) {
+      setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data as Message]));
+    }
   }
 
   async function handleReact(messageId: string, reactionType: string) {
