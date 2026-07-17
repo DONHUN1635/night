@@ -7,7 +7,8 @@ import clsx from 'clsx';
 const ITEMS = [
   { href: '/dashboard', label: 'Kezdőlap', icon: '🌙' },
   { href: '/rooms', label: 'Szobák', icon: '💬' },
-  { href: '/rooms/parositas', label: 'Párosítás', icon: '🔗' },
+  { href: '/tortenetek', label: 'Történetek', icon: '📖' },
+  { href: '/uzenetek', label: 'Üzenetek', icon: '✉️' },
   { href: '/naplo', label: 'Napló', icon: '📔' },
   { href: '/profil', label: 'Profil', icon: '👤' },
 ];

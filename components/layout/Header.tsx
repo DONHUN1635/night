@@ -10,11 +10,20 @@ export function Header() {
 
         <nav className="hidden items-center gap-6 text-sm text-moonlight-300 md:flex">
           <Link href="/rooms" className="hover:text-moonlight-100">Szobák</Link>
+          <Link href="/tortenetek" className="hover:text-moonlight-100">Történetek</Link>
+          <Link href="/uzenetek" className="hover:text-moonlight-100">Üzenetek</Link>
           <Link href="/dashboard" className="hover:text-moonlight-100">Irányítópult</Link>
           <Link href="/szabalyzat" className="hover:text-moonlight-100">Közösségi szabályok</Link>
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/ertesitesek"
+            className="hidden text-sm text-moonlight-300 hover:text-moonlight-100 sm:block"
+            aria-label="Értesítések"
+          >
+            🔔
+          </Link>
           <Link
             href="/login"
             className="hidden text-sm text-moonlight-300 hover:text-moonlight-100 sm:block"
