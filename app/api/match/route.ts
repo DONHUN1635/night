@@ -46,5 +46,8 @@ export async function POST(request: Request) {
   }
 
   const chosen = filtered[Math.floor(Math.random() * filtered.length)];
+  if (!chosen) {
+    return NextResponse.json({ candidateId: null });
+  }
   return NextResponse.json({ candidateId: chosen.id });
 }
