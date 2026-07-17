@@ -40,29 +40,31 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
-    const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
-
-    if (signUpError || !data.user) {
-      setError(signUpError?.message ?? 'Ismeretlen hiba történt a regisztráció során.');
-      setLoading(false);
-      return;
-    }
-
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user.id,
-      display_name: displayName.trim(),
-      birth_year: Number(birthYear),
-      accepted_guidelines_at: new Date().toISOString(),
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: displayName.trim(),
+          birth_year: Number(birthYear),
+          accepted_guidelines: true,
+        },
+      },
     });
 
     setLoading(false);
 
-    if (profileError) {
-      setError('A fiók létrejött, de a profil mentése nem sikerült. Próbálj bejelentkezni.');
+    if (signUpError || !data.user) {
+      setError(signUpError?.message ?? 'Ismeretlen hiba történt a regisztráció során.');
       return;
     }
 
-    router.push('/dashboard');
+    if (data.session) {
+      router.push('/dashboard');
+    } else {
+      setError(null);
+      router.push('/login?ellenorizd_email=1');
+    }
   }
 
   return (

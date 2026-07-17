@@ -1,18 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const showEmailNotice = searchParams.get('ellenorizd_email') === '1';
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,6 +38,12 @@ export default function LoginPage() {
     <div className="mx-auto max-w-sm">
       <h1 className="font-display text-2xl text-moonlight-100">Belépés</h1>
       <p className="mt-2 text-sm text-moonlight-300">Jó, hogy visszatértél.</p>
+
+      {showEmailNotice && (
+        <p className="mt-4 rounded-lg border border-dusk-500/40 bg-night-900 p-3 text-sm text-moonlight-100">
+          Elküldtünk egy megerősítő e-mailt. Kattints a benne lévő linkre, utána tudsz belépni.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
@@ -79,5 +88,13 @@ export default function LoginPage() {
         Vagy <Link href="/guest" className="text-skyline-400 underline">lépj be vendégként</Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
